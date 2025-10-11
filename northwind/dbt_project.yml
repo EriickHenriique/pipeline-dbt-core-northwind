@@ -31,6 +31,18 @@ clean-targets:         # directories to be removed by `dbt clean`
 # files using the `{{ config(...) }}` macro.
 models:
   northwind:
-    # Config indicated by + and applies to all files under models/example/
-    example:
-      +materialized: view
+    raw:
+      +schema: "raw" 
+      materialized: table
+      +docs:
+        node_color: "#cd7f32"  
+    staging:
+      +schema: "silver" 
+      materialized: table
+      +docs:
+        node_color: "#c0c0c0"  
+    reports:
+      +schema: "gold" 
+      materialized: table
+      +docs:
+        node_color: "#e6b530"  

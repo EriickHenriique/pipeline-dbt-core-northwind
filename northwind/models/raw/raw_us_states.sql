@@ -1,0 +1,1 @@
+select * from us_states us
