@@ -1,0 +1,42 @@
+version: 2
+
+models:
+  - name: stg_categories 
+    description: "Nome dos Produtos"  
+    columns:
+      - name: category_id  
+        description: "ID único da categoria"  
+        tests:
+          - not_null  
+          - unique  
+          - relationships:  
+            to: ref('stg_customers')  
+            field: customer_id 
+      - name: category_name  
+        description: "Nome do Produto"  
+        tests:
+          - not_null  
+      - name: description  
+        description: "Descrição do Produto"  
+        tests:
+          - not_null     
+
+  - name: stg_categories 
+    description: "Nome dos Produtos"  
+    columns:
+      - name: category_id  
+        description: "ID único da categoria"  
+        tests:
+          - not_null  
+          - unique  
+          - relationships:  
+            to: ref('stg_customers')  
+            field: customer_id 
+      - name: category_name  
+        description: "Nome do Produto"  
+        tests:
+          - not_null  
+      - name: description  
+        description: "Descrição do Produto"  
+        tests:
+          - not_null     

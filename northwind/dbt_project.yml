@@ -45,4 +45,4 @@ models:
       +schema: "gold" 
       materialized: table
       +docs:
-        node_color: "#e6b530"  
+        node_color: "#e6b530"
