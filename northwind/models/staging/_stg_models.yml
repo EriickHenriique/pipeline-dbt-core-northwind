@@ -1,42 +1,90 @@
 version: 2
 
 models:
-  - name: stg_categories 
-    description: "Nome dos Produtos"  
+  - name: stg_categories
+    description: "Tabela de preparo (staging) com as categorias de produtos. Cada linha representa uma categoria única."
     columns:
-      - name: category_id  
-        description: "ID único da categoria"  
+      - name: category_id
+        description: "A chave primária (ID exclusivo) para cada categoria."
         tests:
-          - not_null  
-          - unique  
-          - relationships:  
-            to: ref('stg_customers')  
-            field: customer_id 
-      - name: category_name  
-        description: "Nome do Produto"  
-        tests:
-          - not_null  
-      - name: description  
-        description: "Descrição do Produto"  
-        tests:
-          - not_null     
+          - unique
+          - not_null
 
-  - name: stg_categories 
-    description: "Nome dos Produtos"  
+      - name: category_name
+        description: "O nome da categoria (ex: Laticínios, Bebidas, etc.)."
+        tests:
+          - not_null
+
+      - name: description
+        description: "Uma breve descrição da categoria de produtos."
+
+  - name: stg_customers 
+    description: "Tabela de preparo (staging) com os dados de clientes. Cada linha representa um cliente único."
     columns:
-      - name: category_id  
-        description: "ID único da categoria"  
+      - name: customer_id
+        description: "A chave primária (ID exclusivo) para cada cliente."
         tests:
-          - not_null  
-          - unique  
-          - relationships:  
-            to: ref('stg_customers')  
-            field: customer_id 
-      - name: category_name  
-        description: "Nome do Produto"  
+          - unique
+          - not_null
+
+      - name: company_name
+        description: "O nome oficial da empresa do cliente."
         tests:
-          - not_null  
-      - name: description  
-        description: "Descrição do Produto"  
+          - not_null
+
+      - name: contact_name
+        description: "O nome completo do contato principal na empresa."
+
+      - name: contact_title
+        description: "O cargo do contato principal (ex: Gerente de Compras)."
+
+      - name: address
+        description: "O endereço principal do cliente."
+
+      - name: city
+        description: "A cidade onde o cliente está localizado."
+        
+      - name: country
+        description: "O país onde o cliente está localizado."
+
+  - name: stg_employees
+    description: "Tabela de preparo (staging) com os dados de funcionários. Cada linha representa um funcionário único da empresa."
+    columns:
+      - name: employee_id
+        description: "A chave primária (ID exclusivo) para cada funcionário."
         tests:
-          - not_null     
+          - unique
+          - not_null
+
+      - name: first_name
+        description: "O primeiro nome do funcionário."
+        tests:
+          - not_null
+
+      - name: last_name
+        description: "O sobrenome do funcionário."
+        tests:
+          - not_null
+
+      - name: title
+        description: "O cargo do funcionário (ex: Coordenador de Vendas)."
+
+      - name: birth_date
+        description: "A data de nascimento do funcionário."
+
+      - name: hire_date
+        description: "A data em que o funcionário foi contratado."
+      
+      - name: city
+        description: "A cidade de residência do funcionário."
+
+      - name: country
+        description: "O país de residência do funcionário."
+
+      - name: reports_to
+        description: "Chave estrangeira que aponta para o employee_id do gestor direto. Nulo para o funcionário de maior hierarquia."
+        tests:        
+          - relationships:
+              to: ref('stg_employees') 
+              field: employee_id
+

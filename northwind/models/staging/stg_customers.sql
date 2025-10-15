@@ -1,10 +1,13 @@
 {{ config(
     schema='silver',
-    materialized='table'
+    materialized='view'
 ) }}
 
-select 
-    category_id,
-    category_name,
-    description
-from {{ref('raw_categories')}}
+select
+    customer_id, 
+    company_name,
+    contact_name, 
+    contact_title,
+    address,
+    city,country 
+from {{ref('raw_customers')}}

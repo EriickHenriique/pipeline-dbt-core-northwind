@@ -1,1 +1,0 @@
-select * from employee_territories et
