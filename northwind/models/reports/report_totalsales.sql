@@ -34,8 +34,6 @@ final as (
     select
         -- Chaves
         so.order_id,
-        so.customer_id,
-        so.employee_id,
 
         -- Datas
         so.order_date,

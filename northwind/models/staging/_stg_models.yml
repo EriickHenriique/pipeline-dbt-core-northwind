@@ -88,3 +88,165 @@ models:
               to: ref('stg_employees') 
               field: employee_id
 
+
+
+  - name: stg_order_details
+    description: "Tabela de preparo (staging) para os itens de cada pedido. Cada linha representa um produto único dentro de um pedido."
+    columns:
+      - name: order_id
+        description: "Chave estrangeira que referencia o pedido (stg_orders.order_id)."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_orders')
+              field: order_id
+
+      - name: product_id
+        description: "Chave estrangeira que referencia o produto (stg_products.product_id)."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_products')
+              field: product_id
+
+      - name: unit_price
+        description: "O preço unitário do produto no momento da compra."
+        tests:
+          - dbt_expectations.expect_column_values_to_be_non_negative
+
+      - name: quantity
+        description: "A quantidade de unidades do produto comprada."
+        tests:
+          - dbt_expectations.expect_column_values_to_be_non_negative
+
+      - name: discount
+        description: "O desconto aplicado ao item (formato decimal, ex: 0.1 para 10%)."
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              min_value: 0
+              max_value: 1
+
+      - name: total_sale
+        description: "O valor total para o item do pedido, calculado como (preço * quantidade * (1 - desconto))."
+
+    tests:
+      # Teste de chave primária composta
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - order_id
+            - product_id
+  - name: stg_orders
+    description: "Tabela de preparo (staging) com os dados de pedidos. Cada linha representa um pedido único."
+    columns:
+      - name: order_id
+        description: "A chave primária (ID exclusivo) para cada pedido."
+        tests:
+          - unique
+          - not_null
+
+      - name: customer_id
+        description: "Chave estrangeira que referencia o cliente que fez o pedido (stg_customers.customer_id)."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_customers')
+              field: customer_id
+
+      - name: employee_id
+        description: "Chave estrangeira que referencia o funcionário que registrou o pedido (stg_employees.employee_id)."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_employees')
+              field: employee_id
+
+      - name: shipper_id
+        description: "Chave estrangeira que referencia a transportadora responsável pelo envio (stg_shippers.shipper_id)."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_shippers') # Você precisará criar um modelo stg_shippers
+              field: shipper_id
+
+      - name: order_date
+        description: "A data em que o pedido foi realizado."
+        tests:
+          - not_null
+
+      - name: required_date
+        description: "A data limite para a entrega do pedido."
+
+      - name: shipped_date
+        description: "A data em que o pedido foi enviado. Pode ser nulo se o pedido ainda não foi despachado."
+        tests:
+          # Teste avançado: a data de envio não pode ser anterior à data do pedido.
+          - dbt_utils.expression_is_true:
+              expression: ">= order_date"
+              
+      - name: ship_name
+        description: "O nome do destinatário ou da empresa que receberá o pedido."
+
+      - name: ship_city
+        description: "A cidade de destino do envio."
+
+      - name: ship_country
+        description: "O país de destino do envio."
+  - name: stg_products
+    description: "Tabela de preparo (staging) com os dados de produtos. Cada linha representa um produto único."
+    columns:
+      - name: product_id
+        description: "A chave primária (ID exclusivo) para cada produto."
+        tests:
+          - unique
+          - not_null
+
+      - name: product_name
+        description: "O nome do produto."
+        tests:
+          - not_null
+
+      - name: supplier_id
+        description: "Chave estrangeira que referencia o fornecedor do produto (stg_suppliers.supplier_id)."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_suppliers')
+              field: supplier_id
+
+      - name: category_id
+        description: "Chave estrangeira que referencia a categoria do produto (stg_categories.category_id)."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_categories')
+              field: category_id
+
+      - name: unit_price
+        description: "O preço de venda por unidade do produto. Não deve ser negativo."
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+
+      - name: units_in_stock
+        description: "A quantidade de unidades do produto atualmente em estoque."
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+
+      - name: units_on_order
+        description: "A quantidade de unidades do produto já pedidas a fornecedores, mas ainda não recebidas."
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+
+      - name: reorder_level
+        description: "O nível de estoque que, ao ser atingido, dispara um novo pedido de compra."
+        tests:
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"
+
+      - name: discontinued
+        description: "Flag que indica se o produto foi descontinuado (1 para sim, 0 para não)."
+        tests:
+          - accepted_values:
+              values: [0, 1]
