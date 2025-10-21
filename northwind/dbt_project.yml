@@ -33,12 +33,12 @@ models:
   northwind:
     raw:
       +schema: "raw" 
-      materialized: view
+      materialized: table
       +docs:
         node_color: "#cd7f32"  
     staging:
       +schema: "silver" 
-      materialized: view
+      materialized: table
       +docs:
         node_color: "#c0c0c0"  
     reports:

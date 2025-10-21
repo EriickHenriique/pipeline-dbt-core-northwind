@@ -1,6 +1,6 @@
 {{ config(
     schema='silver',
-    materialized='view'
+    materialized='table'
 ) }}
 
 
